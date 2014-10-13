@@ -1,0 +1,22 @@
+Listeners listen for certain events.
+
+onClickListener() for the button
+
+eg) 
+     //Act1 called Act2 by startActivityForResult(Intent i)
+    //in this ex. we are in Act2. User finishes editing a note. 
+    //we pass back the info from Act2 to Act1 by using a bundle
+
+Button confirmButton = (Button) findViewById(R.id.confirm_button)
+confirmButton.setOnClickListener(new View.OnClickListener() {
+    public void onClick(View view) {
+      Bundle bundle = new Bundle();
+      bundle.putString(NotesDbAdapter.KEY_TITLE, 
+                         mTitleText.getText().toString());
+      bundle.putString(NotesDbAdapter.KEY_BODY, 
+                         mBodyText.getText().toString());
+      if (mRowId != null) {
+          bundle.putLong(NotesDbAdapter.KEY_ROWID, mRowId);
+      }
+    }
+});

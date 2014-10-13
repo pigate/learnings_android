@@ -1,0 +1,90 @@
+To add tabs, you must do the following:
+
+0) Inflate your action bar (assuming you created a new menu template)
+//MainActivity.java
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_activity_actions, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+1) Create a class that implements ActionBar.TabListener
+   Make sure it is within the namespace of your project
+	Make sure you implement the following:
+
+	Constructor
+	onTabReselected
+	onTabSelected
+	onTabUnselected
+
+    *** this class will handle callbacks for your tab. Is MANDATORY!
+
+import com.example.bimbim.myfirstapp.R;
+public class MyTabsListener implements ActionBar.TabListener {
+    public Fragment fragment;
+    public Context context;
+
+    public MyTabsListener(Fragment fragment, Context context){
+        this.fragment = fragment;
+        this.context = context;
+    }
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+        Toast.makeText(context, "Reselected!", Toast.LENGTH_SHORT).show();
+
+    }
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+        Toast.makeText(context, "Selected!", Toast.LENGTH_SHORT).show();
+        ft.replace(R.id.content_frame, fragment);
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+        Toast.makeText(context, "Unselected!", Toast.LENGTH_SHORT).show();
+        ft.remove(fragment);
+    }
+}
+
+2) Create a Fragment to hook up to your tab. Tabs work with fragments.
+ *** See fragments for more
+  In this example, I created HomeFragment.java with corresp. fragment_home.xml
+  //Below, I hook up the fragment with the tab...
+
+3) In the view you want to use:
+//MainActivity.java
+ 
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        ActionBar actionbar = getActionBar();
+        actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        ActionBar.Tab mHomeTab = actionbar.newTab().setText("Home");
+        ActionBar.Tab mChatTab = actionbar.newTab().setText("Chat");
+        ActionBar.Tab mMeetTab = actionbar.newTab().setText("Meet");
+        ActionBar.Tab mPartyTab = actionbar.newTab().setText("Party");
+
+        Fragment mHomeFragment = new HomeFragment();
+        Fragment mChatFragment = new ChatFragment();
+        Fragment mMeetFragment = new MeetFragment();
+        Fragment mPartyFragment = new PartyFragment();
+
+        mHomeTab.setTabListener(new MyTabsListener(mHomeFragment, getApplicationContext())); //hook up fragment with tab through the tab listener
+
+        actionbar.addTab(mHomeTab); //actually gets "Home" to show up
+
+	//...
+
+        Fragment text = new TextFragment();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.content_frame, text);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.addToBackStack(null);
+        ft.commit();
+
+    }
+ 

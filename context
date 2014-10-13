@@ -1,0 +1,78 @@
+#src: http://www.cs.dartmouth.edu/~campbell/cs65/lecture08/lecture08.html
+
+Notice Toast.makeText(Context context, String text, Toast.LENGTH_SHORT).show()?
+You can write this in an Activity Class, or some random other class like MyTabsListener Class, or Fragment Class.
+
+But to make it work, you need the correct context to get it to show up on your phone screen.
+
+Context: current state of application or activity or object
+	+ Allows newly created objects to understand what has been going on
+	  and to access underlying system resources that only your application/activity/object knows about
+	+ Actually represents various environment data: local files, DB, class loaders assoc. to env, services including system-level services/API access, etc
+	--> Need a reference to Context to get info regarding current object(thiis), or another part of your program (activity, package/application)
+
+Two main types of context:
+1) Application Context <-- global. belongs to your whole application
+2) Activity Context <-- only belongs to the current activity you're on.
+	This lives and dies with a certain activity.
+
+To get these contexts:
+1) Appliation Context
+    [M1] getApplicationContext()
+    [M2] getApplication()
+2) Acitivty Context
+    getBaseContext()
+    this (only works when you are directly inside activity class.java)
+
+eg)
+//MainActivity.java
+
+public boolean onOptionsItemSelected(MenuItem item) {
+  switch(item.getItemId()){
+  case R.id.menuitem_search:
+	Toast.makeText(this, getString(R.string.ui_menu_search), Toast.LENGTH_LONG).show();
+ }
+}
+
+
+//Being directly in the MainActivity class gives automatic access to its methods of 'this' and the Resources(R.string ... etc, R.id.... etc)
+//NOTE: 'this'
+//NOTE: 'R.string.ui_menu_search'
+//	Could not have access to these if not directly inside class, and not without the context
+
+//We have MyTabsListener Class, which is not an activity. It is a helper class, making it outside the scope of MainActivity.
+// MyTabsListener needs the 'context' in order to display toast.
+//Is usueful to save the context for later use in the toast
+
+//MainActivity.java, when tab selected
+
+  mFindTab.setTabListener(new MyTabsListener(mFindFragment, getApplicationContext()))
+
+//MyTabsListener.java
+class MyTabsListener implements ActionBar.TabListener {
+  public Fragment fragment;
+  public Context context;
+ 
+  public MyTabsListener(Fragment fragment, Context context) {
+    this.fragment = fragment;
+    this.context = context;
+  }
+
+  @Override
+  public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft){
+    Toast.makeText(context, "Selected!", Toast.LENGTH_SHORT).show();
+    ft.replace(R.id.fragment_container, fragment)
+  }
+}
+
+//// If you just want the Toast to show up inside the fragment, and not be global like the example above, just use the getActivity() to get the Activity Context.
+This way, if you move to another Activity, you don't see the Toast.
+
+eg) public static class TitlesFragment extends ListFragment {
+  ....
+  @Override
+  public void onActivityCreated(Bundle savedInstanceState){
+    super.onActivityCreated(savedInstanceState);
+    Toast.makeText(getActivity(), "TitlesFragment", Toast.LENGTH_SHORT).show()
+  }
+}

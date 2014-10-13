@@ -1,0 +1,113 @@
+Think of fragments as sort of like threads. THey live and die with the current view. 
+They are reusable within other views.
+
+#src: http://www.learn2crack.com/2014/06/android-action-bar-example.html
+#src: http://stackoverflow.com/questions/5658675/replacing-a-fragment-with-another-fragment-inside-activity-group
+
+
+// Create new fragment and transaction
+Fragment newFragment = new ExampleFragment();
+FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+// Replace whatever is in the fragment_container view with this fragment,
+// and add the transaction to the back stack
+transaction.replace(R.id.fragment_container, newFragment);
+transaction.addToBackStack(null);
+
+// Commit the transaction
+transaction.commit();
+
+So, initialize some fragment container with a fragment first.
+Then later, if you want, replace the fragment container's fragment with another fragment.
+
+////////
+EAch fragment needs to be associated with a view. Each fragment also has its own java file.
+
+If java file name for fragment is : ArticleFragment.java
+Then its fragment xml form is called fragment_article.xml
+Then to call it on some View, 
+
+Fragment article = new ArticleFragment();
+FragmentTransaction ft = getFragmentManager().beginTransaction();
+ft.replace(R.id.content_frame, article);
+ft.setTransition(FragmentTrasaction.TRANSIT_FRAGMENT_OPEN);
+ft.addToBackStack(null);
+ft.commit();
+
+
+Here is what a fragment's java file looks like
+eg) MainFragment.java
+package com.example.bimbim.myfirstapp;
+
+
+
+import android.os.Bundle;
+import android.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+
+
+/**
+ * A simple {@link Fragment} subclass.
+ *
+ */
+public class MainFragment extends Fragment {
+
+
+    public MainFragment() {
+        // Required empty public constructor
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_main, container, false);
+    }
+
+
+}
+
+#res/layout/activity_main.xml
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <TextView
+        android:id="@+id/text1"
+        android:text="@string/hello_world"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+    <TextView
+        android:id="@+id/text2"
+        android:text="@string/hello_world"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text1"/>
+    <EditText
+        android:id="@+id/edit_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_below="@+id/text2"
+        android:hint="@string/edit_message"
+        />
+    <Button
+        android:id="@+id/button_send"
+        android:text="@string/button_send"
+        android:onClick="sendMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edit_message"/>
+    <FrameLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/button_send"/>
+</RelativeLayout>

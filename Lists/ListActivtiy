@@ -1,0 +1,28 @@
+//src: http://developer.android.com/reference/android/app/ListActivity.html
+//NOTE: you do have to manage the SQL or API calls in order to get access to database.
+
+Your activity can extend ListView to take advantage of listing stuff.
+
+If you create custom view, when setting your own view layout with setContentView() in onCreate(), your own view MUST contain a ListView object with id "@android:id/list"
+
+Your custom view can contain another view object of any type to display if list view is empty. This "empty list" notifier must have an id "android:id/empty"
+
+Note that when the empty view is present, the list view will be hidden when no data to display.
+
+1) Layout: Needs a ListView
+
+LinearLayout
+  ListView (@android:id/list)
+
+2) Bind your data from your java code using cursor and setListAdapter(cursor)
+eg) 
+private void fillData(){
+  private Cursor mCursor = DbHelper.fetchPeople();
+  ListAdapter adapter = new SimpleCursorAdapter(
+	this, 
+	R.layout.people_index_activity, //current view's layout. get the name right.
+	mCursor, //cursor that points to all query results
+	new String[]{ 'DbHelper.NAME', 'DbHelper.AGE'}, //what columns you want 
+	new int[] { R.id.text1, R.id.text2}); //template for respective columns
+  setListAdapter(adapter);
+}

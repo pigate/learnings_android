@@ -1,0 +1,19 @@
+http://developer.android.com/guide/topics/ui/themes.html
+http://jgilfelt.github.io/android-actionbarstylegenerator/#name=AppTheme&compat=holo&theme=light&actionbarstyle=solid&texture=0&hairline=0&neutralPressed=1&backColor=e1600e%2C100&secondaryColor=bcd61a%2C100&tabColor=09c%2C100&tertiaryColor=F2F2F2%2C100&accentColor=690%2C100&cabBackColor=FFFFFF%2C100&cabHighlightColor=33B5E5%2C100
+
+If use the jgilfelt action bar style generator, copy the contents of its folders into the correct places.
+
+Now, to set the whole application to use a theme, in AndroidManifest.xml, you're going to find
+
+   <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.AppTheme" >
+
+Now, the jgilfelt generator is going to give you a style_...xml file with some lines like
+<resources>
+
+    <style name="Theme.AppTheme" parent="@android:style/Theme.Holo.Light">
+                 --------------
+			^--------------We are going to use this up there in the AndroidManifest.xml

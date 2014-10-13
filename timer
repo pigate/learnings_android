@@ -1,0 +1,131 @@
+To implement a timer, must have:
+
+[1] Runnable task to pass to a thread to keep track time
+     More java code to make sense of time data
+[2] Layout for your timer
+
+/*TimerActivity.java*/
+import android.os.SystemClock;
+import.os.Handler
+//...
+
+public class TimerActivity extends Activity {
+  private Button startButton;
+  private Button pauseButton;
+  private Button restartButton;
+  private TextView timerValue;
+  private long startTime = 0L;
+  private Handler customHandler = new Handler();
+  long timeInMilliseconds = 0L; //how much time passed since last pressed 'Start'
+  long timeSwapBuff = 0L; //Saves progress, useful for if 'pause'
+  long updatedTime = 0L; //total
+  int secs, mins, hours, normal_min;
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.timer_activity_display_message);
+    //....
+    timerValue = (TextView) findViewById(R.id.timerValue);
+    startButton = (Button) findViewById(R.id.startButton);
+    startButton.setOnClickListener(new View.OnClickListener() {
+      public void onClick(View view){
+        startTime = SystemClock.uptimeMillis();
+        customHandler.postDelayed(updateTimerThread, 0);
+      }
+    });
+    pauseButton = (Button) findViewById(R.id.pauseButton);
+    pauseButton.setOnClickListener(new View.OnClickListener(){
+      public void onClick(View view){
+        timeSwapBuff += timeInMilliseconds;
+        customHandler.removeCallbacks(updateTimerThread);
+      }
+    });
+    restartButton = (Button) findViewById(R.id.restartButton);
+    restartButton.setOnClickListener(new View.OnClickListener(){
+      public void onClick(View view){
+        startTime = SystemClock.uptimeMillis(); 
+        timeInMilliseconds = 0L;
+        timeSwapBuff = 0L;
+        updatedTime = 0L;
+        timerValue.setText("00:00:00:00");
+      }
+    });
+  }  
+  private Runnable updateTimerThread = new Runnable() {
+    @Override
+    public void run() {
+      timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
+      updatedTime = timeSwapBuff + timeInMilliseconds;
+      secs = (int) (updatedTime/1000);
+      mins = secs/60;
+      normal_min = mins%60;
+      hours = mins/60;
+      secs = (secs % 60);
+      int milliseconds = (int) (updatedTime % 1000)/10;
+      timerValue.setText(String.format("%02d", hours)+":"+String.format("%02d",normal_min) + ":" + String.format("%02d", secs)+":"+String.format("%02d", milliseconds));
+      customHandler.postDelayed(this, 0);
+    }
+  }
+}
+
+
+[2] Layout for timer
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.example.bimbim.myfirstapp.TimerActivity">
+
+    <TextView
+        android:text="This is second stage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/second_text"/>
+    <TextView
+        android:id="@+id/timerVal"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="37dp"
+        android:textSize="40sp"
+        android:textColor="#ffffff"
+        android:text="@string/timerVal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/second_text"/>
+    <Button
+        android:layout_width="90dp"
+        android:layout_height="45dp"
+        android:id="@+id/startButton"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="38dp"
+        android:text="@string/startButtonLabel"/>
+    <Button
+        android:layout_width="90dp"
+        android:layout_height="45dp"
+        android:id="@+id/pauseButton"
+
+        android:layout_alignBottom="@+id/startButton"
+
+        android:layout_toRightOf="@+id/startButton"
+        android:text="@string/pauseButtonLabel"
+        />
+    <Button
+        android:id="@+id/restartButton"
+        android:text="@string/restartButtonLabel"
+
+        android:layout_alignBottom="@+id/pauseButton"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/pauseButton"
+
+        android:layout_width="90dp"
+        android:layout_height="45dp"
+        />
+    <FrameLayout
+        android:id="@+id/old_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></FrameLayout>
+</RelativeLayout>

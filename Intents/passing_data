@@ -1,0 +1,44 @@
+To pass data between one activity to another, esp. when one activity is started from within another activity, and when finish second activity, come back to first activity...
+
+- Use Intent with startActivityForResult/onActivityResult() to map connection between the activities to ensure it will return to caller when done
+
+- Use Bundle to package up lots of data
+	Or put stuff into Intent if only few data fields to pass
+
+
+Can use codes between the activity to signal how Activity 2 will act:
+
+Activity1 passes 3 fields to Activity 2: rowId, title, body
+2 activity codes: ACTIVITY_CREATE, ACTIVITY_EDIT
+
+Activity1 -> Activity2 -+
+^                       |
+|______________________ |
+
+
+//Activity1
+@Override
+protected void editNote(long id, String title, String body){
+  //...
+  Intent i = new Intent(this, Activity2.class);
+  i.putExtra("ROW_ID", id);
+  i.putExtra("TITLE", title);
+  i.putExtra("BODY", body);
+  startActivityForResult(i, ACTIVITY_EDIT);
+}
+
+private void createNote(){
+  Intent i = new Intent(this, Activity2.class);
+  startActivityForResult(i, ACTIVITY_CREATE);
+}
+
+@Override
+protected void onActivityResult(int requestCode, int resultcode, Intent intent){
+  super.onActivityResult(requestCode, resultCode, intent);
+  Bundle extras = intent.getExtras();
+  switch(requestCode){
+    case ACTIVITY_CREATE:
+       
+    case ACTIVITY_EDIT:
+  }
+}

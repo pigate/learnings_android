@@ -1,0 +1,37 @@
+WHAT: Menu that pops up when you hold down on an item.
+      Your item is focused on, and the menu pops up. 
+
+HOW: 
+THis menu belongs to every object in a ListView in a ListActivity
+
+/* ListActivity has a getListView() method that returns local ListView object for the acitivty.
+
+So, each list item in this ListView can activate the context menu.
+
+Must register for a context menu by passing our local ListView in  
+*/
+
+//In OurListActiivty.java, at the end of the onCreate() method in 
+
+... onCreate() {
+  ...
+  registerForContextMenu(getListView());
+}
+
+public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+    super.onCreateContextMenu(menu, v, menuInfo);
+    menu.add(0, DELETE_ID, 0, R.string.menu_delete);
+}
+
+public boolean onContextItemSelected(MenuItem item) {
+    switch(item.getItemId()) {
+    case DELETE_ID:
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        mDbHelper.deleteNote(info.id);
+        fillData();
+        return true;
+    }
+    return super.onContextItemSelected(item);
+}
+
+

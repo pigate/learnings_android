@@ -1,0 +1,163 @@
+To make a Rest API request, you package up your url and parameters into an HttpRequest such as HttpPost, HttpGet, etc, depending on what type of request you are making.
+
+This example covers a post request.
+
+We would use an extended AsyncTask to help complete API request since it might take too long. This starts a new thread to execute our request, and after execution, calls onPostExecute().
+	Since AsyncTask carries out the job on a different thread (not the main thread), the other thread is not allowed to touch the view components. UI components can only be altered by the main thread.
+	-Note: must override AsynTask.doInBackground(). Choose the return type.
+	-Note: if want to override onPostExecute(), it must accept a parameter the same type as doInBackground()'s return type.
+
+------------------------------------------------
+
+[1] I usually put the http request logic inside a function called, say, performHttpRequest().
+
+[2] When it comes time to perform request, I instantiate a new class object that extends AsyncTask, and have it execute(request) in the background, and update the UI post execution.
+  - Optional: 
+    I can move the logic that updates the UI 
+    to another function so that maybe I might 
+    reuse my class-object-that-extends-async-task 
+    again and again in other activities.
+
+/****
+ eg) contains logic for httpRequest making
+ **** [1] function: downloadUrl() *****
+ *****
+ ****/
+
+private String downloadUrl() throws ApiException {
+    String ret = "0";
+    try {
+        HttpContext httpContext = new BasicHttpContext();
+        HttpResponse httpResponse;
+        HttpClient httpClient;
+        HttpPost httpPost;
+
+        httpClient = new DefaultHttpClient();
+
+        httpPost = new HttpPost(BegUrl);
+        httpPost.addHeader("accept", "application/json");
+        httpPost.addHeader("Content-Type", "application/json");
+
+        JSONObject obj = new JSONObject();
+        //obj.put("Account Number", "9556303414512");
+        obj.put("first_name", "John");
+        obj.put("last_name", "Clooney");
+
+        httpPost.setEntity(new StringEntity(obj.toString()));
+
+        //throws IOException
+        httpResponse = httpClient.execute(httpPost, httpContext);
+
+        //get http status code. 201 if ok
+        StatusLine r = httpResponse.getStatusLine();
+
+        ret += httpResponse.toString();
+
+        //deal with JSON data
+        HttpEntity entity = httpResponse.getEntity();
+        InputStream is = entity.getContent();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+
+        String line = null;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append((line + "\n"));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        //if gets this far, sb takes on value of JSON response
+        ret = sb.toString();
+    } catch (UnsupportedEncodingException e){
+        ret += "Unsupported Encoding Exception";
+    } catch (IOException e){
+        ret += "IOException. Cannot Execute Response";
+    } catch (JSONException e){
+        ret += "JSONException. Bad response.";
+    }
+
+    return ret;
+}
+
+
+/****
+ class that extends AsyncTask. Handles the httpRequest in the background
+ *****/
+
+    public class DownloadTask extends AsyncTask<String, Void, String> {
+
+        protected String doInBackground(String... urls){
+            String ret = "Something horribly wrong";
+            try {
+                ret = downloadUrl();
+            } catch (ApiException e){
+                httpResult.setText(e.getMessage());
+            }
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            return ret;
+        }
+        /**
+         * Invoked on UI thread after background computation finishes
+         *
+         *
+         * @param result result of background computation
+         */
+        protected void onPostExecute(String result){
+            httpHandler.onResponse(result);
+        }
+
+    }
+
+
+/***********************************
+ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+	*************************
+ extra: 
+ *****************************************/
+
+/****
+  Moved by UI update logic to a new class
+*****/
+
+    public abstract class HttpHandler{
+        public abstract void onResponse(String result);
+
+    }
+
+/**
+ * When button sendRequest is clicked, myclickHandler will evaluate the http request
+ * On finish of http request by DownloadTask(), will call HttpHandler's onResponse()
+ *
+ */
+public void myClickHandler(){
+    httpHandler = new HttpHandler() {
+        @Override
+        public void onResponse(String result) {
+            httpResult.setText(result);
+        }
+    };
+    String url = BegUrl;
+    ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+    if (networkInfo != null && networkInfo.isConnected()){
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+        progressDialog = ProgressDialog.show(this, "Press back to cancel",
+                "Sending Request..." , true, true
+        );
+        new DownloadTask().execute(url);
+    } else {
+        httpResult.setText("No network connection available.");
+    }
+
+}

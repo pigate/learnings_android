@@ -1,0 +1,22 @@
+//src: https://developer.android.com/training/notepad/notepad-ex3.html
+
+onCreate()
+	//@param Bundle savedInstanceState 
+
+onSaveInstanceState(Bundle outState) 
+	//called when Act is stopped. Is like the opposite of onCreate()
+	//May be killed before it is resumed
+	//***SAVE STATE
+ 	//stores any state needed to reinitialize to same condition
+	//like a checkpoint
+
+onPause()
+	//Called when Act ends, even if we use the finish() call
+	//***SAVE STATE
+	//use to save records/changes back to database
+	//release resources	
+
+onResume()
+	//populate fields again
+	//pick up resources again
+

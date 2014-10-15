@@ -1,0 +1,65 @@
+
+To resize window esp. when soft keyboard pops up
+//AndroidManifest.xml
+<activity
+  android:windowSoftInputMode="adjustResize"
+  ...
+/>
+
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/note_edit">
+
+    <RelativeLayout android:id="@+id/edit_title"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_alignParentTop="true"
+        >
+
+        <TextView
+            android:id="@+id/title_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title"
+            />
+
+        <EditText android:id="@+id/title"
+            android:layout_below="@+id/title_view"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <TextView android:id="@+id/body_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/body"
+            android:layout_below="@+id/title"
+            />
+    </RelativeLayout>
+        <view  class="com.example.bimbim.notepadv3.NoteEdit$LinedEditText"
+            android:id="@+id/body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/edit_title"
+            android:layout_above="@+id/confirm"
+            android:scrollbars="vertical"
+            />
+
+        <Button android:id="@+id/confirm"
+            android:text="@string/confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"/>
+
+
+
+
+</RelativeLayout>
+

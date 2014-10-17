@@ -1,0 +1,24 @@
+on Orientation changed, your activity by default will restart.
+
+That means that onDestroy() and onCreate() will be called again, and you may lose some information.
+
+If you don't want to restart your activity, or would like to handle any changes yourself, do the following:
+
+[1] declare in AndroidManifest.xml you can handle it yourself:
+       <activity
+            android:name=".WiFiDirectActivity"
+            android:configChanges="orientation|screenSize" ...
+       />
+
+[2] Override
+    @Override
+    public void onConfigurationChanged(Configuration configuration){
+        super.onConfigurationChanged(configuration);
+	//do optional stuff
+	if (configuration.orientation == Configuration.ORIENTATION_LANSCAPE){
+
+	} ...
+    }
+
+
+Your app will still be allowed to flip around. You just won't lose your data.

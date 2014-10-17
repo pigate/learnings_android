@@ -1,0 +1,23 @@
+ProgressDialog: shows a cycling arrow in a popup box. The rest of view is blocked out.
+
+ProgressDialog progressDialog = null;
+
+//turn on progress dialog
+
+progressDialog = ProgressDialog.show(getActivity(), "Press back to cancel", 
+ "finding peers", true, true, new DialogInterface.OnCancelListener() {
+  @Override
+  public void onCancel(DialogInterface dialog) {
+    //deal with cancel
+  }
+});
+
+//turn off progress dialog
+
+if (progressDialog != null && progressDialog.isShowing()) {
+  progressDialog.dismiss();
+}
+
+if (progressDialog != null && progressDialog.isShowing()) {
+  progressDialog.dismiss();
+}

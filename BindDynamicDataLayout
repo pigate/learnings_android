@@ -1,0 +1,67 @@
+//src: http://developer.android.com/guide/topics/ui/declaring-layout.html#AdapterViews
+
+Use if: content for layout is dynamic or not pre-determined.
+	Want to populate the layout with views at runtime.
+
+Need a layout that subclasses the AdapterView class
+	>> Use an Adapter to bind data to its layout.
+
+Layout examples:
+ListView, GridView
+
+To populate:
+bind AdapterView instance to an Adapter (which retrieves ata from external source. creates a View for each data entry)
+
+Popular Adapters:
+ArrayAdapter (works for Strings only)
+	for array data sources. 
+	view is created by callign toString() on each.
+	  >> contents placed into a TextView
+Override options:
+[1] IF want object appearance to change, override MyObject.toString()
+[2] To create a view other than a TextView (maybe want ImageView), extend ArrayDapter class and override getView() to retun the type of view you want for each item
+
+SimpleCursorAdapter (works if data comes form a Cursor)
++ Must specify layout to use for each row in Cursor
++ Must specify which columns in Cursor can be inserted into which views of the layout
+	eg) create list of people's name + phone
+String[] fromColumns = {ContactsContract.Data.DISPLAY_NAME,
+                        ContactsContract.CommonDataKinds.Phone.NUMBER};
+int[] toViews = {R.id.display_name, R.id.phone_number};
+
+When instantiating SimpleCursorAdapter, choose what layout to use for each result, what Cursor to draw results from, and the from[] and to[] arrays
+
+SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
+        R.layout.person_name_and_number, cursor, fromColumns, toViews, 0);
+ListView listView = getListView();
+listView.setAdapter(adapter);
+
+
+
+eg) ListView for string array 
+/**
+* @param context (this in this case)
+* @param layout that contains a TextView for each MyObject in array
+* @param MyObjectClassArray
+*/
+ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, myStringArray);
+
+ListView listView = (ListView) findViewById(R.id.listview);
+listView.setAdapter(adapter);
+
+
+If data pool changed, call notifyDataSetChanged()
+  >> notifies view that data changed
+      >> view should refresh itself
+
+Handling Click Events for each item in AdapterView
++ Must implement AdapterView.OnItemClickListener interface
+
+// Create a message handling object as an anonymous class.
+private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
+    public void onItemClick(AdapterView parent, View v, int position, long id) {
+        // Do something in response to the click
+    }
+};
+
+listView.setOnItemClickListener(mMessageClickedHandler);

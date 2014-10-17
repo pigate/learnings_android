@@ -1,0 +1,13 @@
+To communicate from activity to fragment:
+(and fragment to fragment will use fragment -> activity, activity -> fragment)
+
+In activity
+[1] find fragment by id
+[2] call fragment's public methods to update or w/e
+
+
+ArticleFragment articleFrag = (ArticleFragment) getSupportFragmentManager().findFragmentById(R.id.article_fragment);
+
+if (articleFrag != null){
+  articleFrag.updateArticleView(position);
+}

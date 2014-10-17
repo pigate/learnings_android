@@ -1,0 +1,28 @@
+(fragment to fragment is actually this, and activity to fragment)
+To communicate between fragment and activity, 
+
+Situation: action in fragment causes side effect in activity
+> declare interface that belongs to fragment
+>> make activity implement this interface
+> In fragment, when some event occurs, trigger callback to activity 
+
+eg) PeersListFragment.java
+
+  OnFinishedTaskListener callback;
+  public interface OnFinishedTaskListener {
+     public void turnOffLoading();
+  }
+ @Override
+ public void onPeersAvailable(WifiP2pDeviceList peerList){
+   callback = (OnFinishedTaskListener) activity;
+   callback.turnOffLoading();
+ }
+
+eg) in our Activity...
+
+public class WiFiDirectActivity extends Activity implements PeersListFragment.OnFinishedTaskListener {
+ public void turnOffLoading(){
+     progressView.setVisibility(View.GONE);
+ }
+  ...
+}

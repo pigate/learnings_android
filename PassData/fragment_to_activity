@@ -14,7 +14,10 @@ eg) PeersListFragment.java
   }
  @Override
  public void onPeersAvailable(WifiP2pDeviceList peerList){
-   callback = (OnFinishedTaskListener) activity;
+   callback = (OnFinishedTaskListener) getActivity(); 
+	//getActivity works if this fragment is sitting in an activity
+	//else, you have to save an instance of Activity beforehand, then cast activity as (OnFinishedTaskListener)
+
    callback.turnOffLoading();
  }
 

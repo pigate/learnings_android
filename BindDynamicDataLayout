@@ -1,3 +1,6 @@
+//very helpful src of how adapter is refreshed:
+http://stackoverflow.com/questions/12229817/android-how-does-notifydatasetchanged-method-and-listviews-work
+
 //src: http://developer.android.com/guide/topics/ui/declaring-layout.html#AdapterViews
 
 Use if: content for layout is dynamic or not pre-determined.
@@ -65,3 +68,76 @@ private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
 };
 
 listView.setOnItemClickListener(mMessageClickedHandler);
+
+
+
+eg) Big example involving ListFragment and its adapter
+
+public class BDArrayAdapter extends ArrayAdapter<BluetoothDevice> {
+    private final Context context;
+    private List<BluetoothDevice> items;
+
+    public BDArrayAdapter(Context context, List<BluetoothDevice> objects){
+        super(context, R.layout.rows_peers, objects);
+        this.context = context;
+        this.items = objects;
+    }
+
+    public View getView(int position, View convertView, ViewGroup parent){
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View rowView = inflater.inflate(R.layout.rows_peers, parent, false);
+        //do stuff to rowView's views
+        TextView device_info = (TextView) rowView.findViewById(R.id.people_name_address);
+        BluetoothDevice device = items.get(position);
+        device_info.setText(device.getName() + "\n" + device.getAddress());
+
+        return rowView;
+    }
+}
+
+public class ListPeers extends ListFragment {
+    List<BluetoothDevice> pairedDevices = new ArrayList<BluetoothDevice>();
+    public ListPeers() {
+        // Required empty public constructor
+    }
+
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+        this.setListAdapter(new BDArrayAdapter(getActivity(), pairedDevices));
+    }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_list_peers, container, false);
+    }
+
+
+}
+
+public class BlueToothActivity extends Activity {
+  ...
+  Set<BluetoothDevice> pairedDevices;
+
+  public void onDiscoverOtherDevices(){
+  if (mReceiver == null){
+    mReceiver = new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+        String action = intent.getAction();
+        //If found device
+        if (BluetoothDevice.ACTION_FOUND.equals(action)){
+          //Add device info
+          BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+	  if (pairedDevices.add(device)){
+	    
+	  };
+        }
+      }
+    };
+  }
+  registerReceiver(mReceiver, filter);
+  }
+}

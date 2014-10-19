@@ -25,7 +25,8 @@ eg) in our Activity...
 
 public class WiFiDirectActivity extends Activity implements PeersListFragment.OnFinishedTaskListener {
  public void turnOffLoading(){
-     progressView.setVisibility(View.GONE);
+     progressView.setVisibility(View.GONE); 
+     otherFragment.doStuff("hi, fragment1 pokes you");
  }
   ...
 }

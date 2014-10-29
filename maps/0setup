@@ -1,0 +1,75 @@
+[0] setup google play services, added to your manifest. Added dependency.
+Added your API key for google maps v2 and registered it online.
+
+When registering, need SHA1 from certificate.
+To get debug certificate(use only when debugging. If running and debugging app, will need to use this):
+
+        keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
+        #seriously, it's always this line for some reason.
+
+        copy the SHA1. Paste online in google developers console.
+
+
+
+an example:
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.eightrabbit.mapdemo" >
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true"/>
+
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="keyValue"/>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+    </application>
+
+</manifest>
+
+[0.5] Check google play services available (IMPT enough to put in own function. Call everytime before connect anything).
+    //check Google Play services available
+    private boolean servicesConnected(){
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (ConnectionResult.SUCCESS == resultCode){
+            Log.d("Location Updates", "Google Play available");
+            return true;
+        } else {
+            Toast.makeText(this, "Google Play not available. Check network connections", Toast.LENGTH_SHORT).show();
+            Log.d("Location Updates", "Google Play not available. Please check network connections");
+            return false;
+        }
+    }
+
+[0.8] Get your map ready
+    private boolean mapUp(){
+        //Do null check to confirm if have already instantiate the map
+        if (map == null){
+            map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+        }
+        return map != null;
+    }
+

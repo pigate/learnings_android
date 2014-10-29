@@ -1,0 +1,88 @@
+To access user's device's currentLocation, we are going to use a LocationClient to help us locate user's lastLocation.
+The lastLocation is pretty current. It is the last known place user was at when they could be located. It serves our purpose well.
+
+We will need to 
+1. setup permissions to access user's location.
+2. setup MyLocationEnabled(true).
+3. create our LocationClient instance
+4. attempt to connect LocationClient when activity starts.
+5. Set up our activity to listen for state of connection. Handle success.
+6. Handle any errors.
+
+[0] 0setup steps
+
+[1] add these permissions to manifest for google map currentLocation to work.
+
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+[2] enable your location to be detected.
+mMap.setMyLocationEnabled(true);
+
+[3] create and save a LocationClient instance. 
+public class MainActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
+    GoogleMap map;
+    LocationClient locationClient;
+    private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        locationClient = new LocationClient(this, this, this);
+    }
+[4] Attempt to connect LocationClient when activity starts. If connected, ask for location
+    /**
+    Called when Activity becomes visible
+     */
+    @Override
+    protected void onStart(){
+        super.onStart();
+        locationClient.connect();
+    }
+    /**
+     * Called when Activity stops.
+     */
+    @Override
+    protected void onStop(){
+        locationClient.disconnect();
+        super.onStop();
+    }
+
+[5]
+    @Override
+    public void onConnected(Bundle dataBundle){
+        Log.d("Location Services", "Connected");
+        if (mapUp()) {
+            map.setMyLocationEnabled(true);
+            LatLng initialPosition;
+
+
+            Location myLocation = locationClient.getLastLocation(); //map.getMyLocation();
+            if (myLocation != null){
+                double dLat = myLocation.getLatitude();
+                double dLong = myLocation.getLongitude();
+                initialPosition = new LatLng(dLat, dLong);
+            } else initialPosition = new LatLng(-33.867, 151.206);
+
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 13));
+        }
+    }
+
+[5] Error Handling
+    @Override
+    public void onDisconnected(){
+        Log.d("Location Services", "Disconnected");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult){
+        if (connectionResult.hasResolution()){
+            try {
+                connectionResult.startResolutionForResult(this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(this, "Failed to connect to network. Try again? Error code: "+connectionResult.getErrorCode(), Toast.LENGTH_SHORT);
+        }
+    }

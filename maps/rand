@@ -1,0 +1,53 @@
+  HttpURLConnection conn = null;
+        StringBuilder jsonREsults = new StringBuilder();
+        URL url;
+        StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
+
+       try {
+            //StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
+            //sb.append(RANK);
+            sb.append("&input="+ URLEncoder.encode(input, "utf8"));
+            sb.append(LOCATION+ currentPosition.latitude+","+currentPosition.longitude);
+            sb.append("&radius=500");
+            sb.append("&key=" + API_KEY);
+
+            //sb.append("&components=country:us"); //todo change later to query desired country
+
+            url = new URL(sb.toString());
+            conn = (HttpURLConnection) url.openConnection();
+            InputStreamReader in = new InputStreamReader(conn.getInputStream());
+
+            int read;
+            char[] buff = new char[1024];
+            while((read = in.read(buff)) != -1){
+                jsonREsults.append(buff, 0, read);
+            }
+        } catch (MalformedURLException e){
+            Toast.makeText(this, "Error processing Places API URL"+sb.toString(), Toast.LENGTH_SHORT).show();
+            Log.e(LOG_TAG, "Error processing Places API URL"+jsonREsults.toString(), e);
+            return resultList;
+
+        } catch (IOException e){
+            Toast.makeText(this, "Error connecting to Places API URL"+sb.toString(), Toast.LENGTH_SHORT).show();
+            Log.e(LOG_TAG, "Error connecting to Places API URL", e);
+            return resultList;
+
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonREsults.toString());
+            JSONArray predsJsonArray = jsonObject.getJSONArray("predictions");
+
+            resultList = new ArrayList<String>(predsJsonArray.length());
+            for(int i = 0; i < predsJsonArray.length(); i++){
+                resultList.add(predsJsonArray.getJSONObject(i).getString("description"));
+            }
+        } catch (JSONException e){
+            Log.e(LOG_TAG, "Error processing JSON results", e);
+            Toast.makeText(this, "Error processing JSON Results"+jsonREsults.toString(), Toast.LENGTH_SHORT).show();
+            return resultList;
+
+        }
+

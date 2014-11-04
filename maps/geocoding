@@ -1,0 +1,46 @@
+Status Codes:
+
+"OK"
+"ZERO_RESULTS"
+"OVER_QUERY_LIMIT"
+"REQUEST_DENIED"
+"INVALID_REQUEST"
+"UNKNOWN_ERROR"
+
+=======
+
+Result made of following fields:
+
+types[] #0 or more tags identifying what type result returned
+	eg) "Chicago" ==> "locality", "political"
+
+formatted_address.address_components[] #in some countries, the postal address.
+  address_components[]
+	type[]: street_address/route/intersection/political/country/administrative_area_level1-5/colloquial_area (commonly used alt name)/locality/neighborhood/premise (named location or building or collection of buildings)/postal_code/natural_feature(prominent natural feature)/airport/park/point_of_interest(eg. Empire State Building, Statue of Liberty)
+    + Empty list inidicates no known types for particular address component
+    + Address components may also include these types:
+	floor
+	establishment(indicates place not yet categorized)
+	parking (parking lot/structure)
+	post_box
+	postal_town
+	room
+	street_number
+	bus_station, train_station, transit_station
+
+	long_name
+	short_name
+	  eg) "AK" == Alaska
+postcode_localities[] #if contains multiple localities
+geometry.location #geocoded latitude, longitude <---- VERY IMPORTANT
+	.location_type #how good the lock is on location
+	  eg) "ROOFTOP" #very specified
+	   	"RANGE_INTERPOLATED" #approximation
+		"GEOMETRIC_CENTER" #somewhere in center of city is best they can do
+		"APPROXIMATE" #no idea other than approximate
+	.viewport: recommended viewport for displaying. southwest and northeast corner
+	.bounds #bounding box but may not match viewport
+partial_match: no exact match found. Was able to match part of requested address
+	indicates mispelling and/or incomplete address
+
+

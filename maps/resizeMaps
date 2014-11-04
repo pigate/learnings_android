@@ -1,0 +1,30 @@
+
+
+//to fit bounds
+//Android Java version:
+//src: http://stackoverflow.com/questions/14828217/android-map-v2-zoom-to-show-all-the-markers
+
+VisibleRegion vr = mMap.getProjection().getVisibleRegion();
+double left = vr.latLngBounds.southwest.longitude;
+double top = vr.latLngBounds.northeast.latitude;
+double right = vr.latLngBounds.northeast.longitude;
+double bottom = vr.latLngBounds.southwest.latitude;
+
+            VisibleRegion vr = map.getProjection().getVisibleRegion();
+            LatLng sw = vr.latLngBounds.southwest;
+            LatLng ne = vr.latLngBounds.northeast;
+
+            LatLngBounds bounds = new LatLngBounds(sw, ne);
+
+            bounds = bounds.including(coords); //must replace. unless you make a new bounds instance
+
+            map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 5));
+
+//Javascript version
+//src: http://stackoverflow.com/questions/16331430/resizing-a-google-map-to-fit-a-group-of-markers
+
+var bounds = new google.maps.LatLngBounds();
+for (var i=0; i < yourArrayOfMarkers.length; i++) {
+   bounds.extend(yourArrayOfMarkers[i].getPosition();
+}
+yourMap.fitBounds(bounds);
